@@ -1,18 +1,48 @@
 import random
+from abc import ABC, abstractmethod
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-class CoinToss:
-    HEAD = 0
-    TAIL = 1
+class CoinResult(ABC):
+    def __str__(self):
+        return self.value
 
+    def __eq__(self, other):
+        return self.value == other.value
+
+    @abstractmethod
+    def reverse(self):
+        raise NotImplementedError()
+
+
+class Head(CoinResult):
+    def __init__(self):
+        self.value = "表"
+
+    def reverse(self):
+        return Tail()
+
+
+class Tail(CoinResult):
+    def __init__(self):
+        self.value = "裏"
+
+    def reverse(self):
+        return Head()
+
+
+RESULTS = [Head(), Tail()]
+
+
+class CoinToss:
     def __init__(self):
         self.consecutive_count = 0
-        self.pre_state = self.HEAD
+        self.pre_state = Head()
 
     def toss(self):
-        current_state = random.choice([self.HEAD, self.TAIL])
+        current_state = random.choice(RESULTS)
 
         if self.pre_state == current_state:
             self.consecutive_count += 1
@@ -23,6 +53,7 @@ class CoinToss:
 
         return current_state
 
+    @property
     def get_consecutive_count(self):
         return self.consecutive_count
 
@@ -35,10 +66,11 @@ class Gambler:
     def judge(self, consecutive_count, current):
         if consecutive_count >= self.belief:
             self.judge_count += 1
-            return CoinToss.HEAD if current == CoinToss.TAIL else CoinToss.TAIL
+            return current.reverse()
         else:
             return None
 
+    @property
     def get_judge_count(self):
         return self.judge_count
 
@@ -53,8 +85,8 @@ def gamblers_fallacy(gamblers_belief=5):
     while True:
         judge_result = gambler.judge(coin_toss.consecutive_count, coin_toss.pre_state)
         current = coin_toss.toss()
-        print("表か裏か:" + "表" if current == CoinToss.HEAD else "裏")
-        print("連続何回か:" + str(coin_toss.get_consecutive_count()))
+        print("表か裏か:" + str(current))
+        print("連続何回か:" + str(coin_toss.get_consecutive_count))
         if judge_result is None:
             print("判断なし")
             continue
@@ -66,7 +98,7 @@ def gamblers_fallacy(gamblers_belief=5):
             wrong_num += 1
 
         plt.bar(np.array(["judge_count", "correct", "wrong"]),
-                np.array([gambler.get_judge_count(), correct_num, wrong_num]))
+                np.array([gambler.get_judge_count, correct_num, wrong_num]))
         plt.pause(.1)
 
 
