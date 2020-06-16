@@ -15,6 +15,8 @@ class Man:
 
 if __name__ == '__main__':
     ogre = Man("範馬勇次郎", "愚地独歩", "刃牙")
+    gg = Man("範馬勇次郎", "愚地独歩", "刃牙")
+    
     president = Man("ブッシュ", "クリントン")
     doppo = Man("愚地独歩", "範馬勇次郎", "刃牙")
 
